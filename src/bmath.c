@@ -14,6 +14,7 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/vmalloc.h>
+#include <linux/set_memory.h>
 
 MODULE_AUTHOR("Frederick Lawler <me@fred.software>");
 MODULE_DESCRIPTION("Kernel module implementation of bmath");
@@ -153,6 +154,7 @@ static int init_bmath(struct bmath_dev *dev)
 		}
 
 		unsigned long addr = (unsigned long)fw + sym.st_value;
+		set_memory_rox(addr, 1);
 
 		sym_name = (char *)strtab_start + sym.st_name;
 
