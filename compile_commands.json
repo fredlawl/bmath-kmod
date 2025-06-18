@@ -1,8 +1,8 @@
 [
   {
     "arguments": [
-      "/bin/gcc",
-      "-Wp,-MMD,src/.bmath.o.d",
+      "/usr/bin/gcc",
+      "-Wp,-MMD,src/.init.o.d",
       "-nostdinc",
       "-I/usr/src/kernels/6.14.9-300.fc42.x86_64/arch/x86/include",
       "-I/usr/src/kernels/6.14.9-300.fc42.x86_64/arch/x86/include/generated",
@@ -114,19 +114,21 @@
       "-Wno-unused-parameter",
       "-g",
       "-DDEBUG",
+      "-g",
+      "-I/src",
       "-fsanitize=bounds-strict",
       "-fsanitize=shift",
       "-DMODULE",
-      "-DKBUILD_BASENAME=\"bmath\"",
-      "-DKBUILD_MODNAME=\"bmath\"",
-      "-D__KBUILD_MODNAME=kmod_bmath",
+      "-DKBUILD_BASENAME=\"init\"",
+      "-DKBUILD_MODNAME=\"src/bmath\"",
+      "-D__KBUILD_MODNAME=kmod_src/bmath",
       "-c",
       "-o",
-      "src/bmath.o",
-      "src/bmath.c"
+      "src/init.o",
+      "src/init.c"
     ],
     "directory": "/home/fred/Projects/bmath-kmod",
-    "file": "/home/fred/Projects/bmath-kmod/src/bmath.c",
-    "output": "/home/fred/Projects/bmath-kmod/src/bmath.o"
+    "file": "/home/fred/Projects/bmath-kmod/src/init.c",
+    "output": "/home/fred/Projects/bmath-kmod/src/init.o"
   }
 ]

@@ -1,12 +1,8 @@
-MEMORY {
-  sneaky (wxa) : ORIGIN = 0, LENGTH = 256K
-}
-
 SECTIONS {
-  .fred : 
-  {
+  .fred : {
+    . = ALIGN(8);
     *(.fred);
-  } > sneaky
-}
-
-
+    add = .;
+    summation = .;
+  }
+} INSERT AFTER .text

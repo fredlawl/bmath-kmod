@@ -1,0 +1,18 @@
+#ifndef _BMATH_SYMBOLS_H_
+#define _BMATH_SYMBOLS_H_
+
+struct firmware;
+struct device;
+typedef int (*request_firmware_t)(const struct firmware **, const char *,
+				  struct device *);
+typedef int (*set_memory_t)(unsigned long, int);
+
+static request_firmware_t __request_firmware =
+	(request_firmware_t)<request_firmware>;
+
+static set_memory_t __set_memory_ro = (set_memory_t)<set_memory_ro>;
+static set_memory_t __set_memory_rw = (set_memory_t)<set_memory_rw>;
+static set_memory_t __set_memory_x = (set_memory_t)<set_memory_x>;
+static set_memory_t __set_memory_nx = (set_memory_t)<set_memory_nx>;
+
+#endif

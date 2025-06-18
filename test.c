@@ -1,19 +1,24 @@
-//#include <stdio.h>
+#include <stdio.h>
 
-//void print_hello(void);
-int add(int a, int b);
+static int cumulative = 0;
 
-//void print_hello(void)
-//{
-//	puts("hello, world");
-//}
-
-//__attribute__((section(".fred"))) int add2(int a, int b)
-//{
-//	return a * b;
-//}
+int add(int, int);
+int summation(void);
+void show_summation(void);
 
 int add(int a, int b)
 {
-	return a + b;
+	int ret = a + b;
+	cumulative += ret;
+	return ret;
+}
+
+int summation(void)
+{
+	return cumulative;
+}
+
+void show_summation(void)
+{
+	printf("summation: %d\n", summation());
 }
