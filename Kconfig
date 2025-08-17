@@ -1,0 +1,8 @@
+config BMATH
+  tristate "bmath kernel support"
+  default n
+  help
+    Loads libbmath into the kernel for execution via /dev/bmath.
+    /usr/lib/firmware/libbmath.so is expected to exist.
+
+    If unsure, say N.
