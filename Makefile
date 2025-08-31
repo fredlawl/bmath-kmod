@@ -26,6 +26,7 @@ src/dl/symbols.h: src/dl/symbols.h.in System.map
 
 System.map:
 	-cp /boot/System.map-$(KVER) $@
+	-cp /lib/debug/boot/System.map-$(KVER) $@
 	-cp $(KDIR)/System.map $@
 
 .PHONY: firmware
