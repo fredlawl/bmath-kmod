@@ -149,16 +149,13 @@ static int evaluate(void *tls, FILE *stream, struct parser_context *pctx,
 			break;
 		}
 
+		// set error to zero because these are not read errors
 		err = 0;
 		goto err;
 	}
 
-	GUARD_CALL_1(print_set_stream, (uintptr_t)tls, stream);
-	GUARD_CALL_3(print_number, (uintptr_t)tls, val, fmt->uppercase,
-		     fmt->encoding);
-	if (fmt->binary) {
-		GUARD_CALL_1(print_binary, (uintptr_t)tls, val);
-	}
+	GUARD_CALL_6(print_all, (uintptr_t)tls, stream, val, fmt->encodings,
+		     fmt->encodings_len, fmt->format, fmt->out_format);
 
 err:
 	return err;
@@ -239,9 +236,7 @@ static int init_bmath(struct bmath_dev *dev, const struct firmware *fw)
 	REGISTER_BMATH_FUNC(exe, "parser_new", parser_new, err);
 	REGISTER_BMATH_FUNC(exe, "parser_free", parser_free, err);
 	REGISTER_BMATH_FUNC(exe, "parse", parse, err);
-	REGISTER_BMATH_FUNC(exe, "print_number", print_number, err);
-	REGISTER_BMATH_FUNC(exe, "print_binary", print_binary, err);
-	REGISTER_BMATH_FUNC(exe, "print_set_stream", print_set_stream, err);
+	REGISTER_BMATH_FUNC(exe, "print_all", print_all, err);
 
 	dev->exe = exe;
 
@@ -304,6 +299,7 @@ err:
 
 static int bmath_release(struct inode *inode, struct file *file)
 {
+	// BUG: Need to put a lock here so that the driver isn't removed until current references are drained etc...
 	struct bmath_data *data = (struct bmath_data *)file->private_data;
 	libc_stream_release(data->stream);
 	GUARD_CALL_1(parser_free, (uintptr_t)data->tls, data->pctx);

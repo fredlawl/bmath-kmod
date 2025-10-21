@@ -6,8 +6,8 @@ exercise in loading libbmath.so into the kernel and expose functionality
 via the character device: `/dev/bmath`.
 
 > WARNING: Do not use this code in production! This is for educational
-purposes only! There are clear an obvious security implications
-loading executing shared libraries in kernel space.
+> purposes only! There are clear an obvious security implications
+> loading executing shared libraries in kernel space.
 
 ## Basic usage
 
@@ -50,8 +50,11 @@ Format:
 #define BMATH_SET_FORMAT 0x4004b301
 
 // arg
-#define BMATH_FMT_DEFAULT 0
+#define BMATH_FMT_NONE 0
 #define BMATH_FMT_UPPERCASE (1 << 0)
+#define BMATH_FMT_JUSTIFY (1 << 1)
+#define BMATH_FMT_HUMAN (1 << 2)
+#define BMATH_FMT_DEFAULT BMATH_FMT_NONE
 ```
 
 Encoding:
@@ -63,17 +66,32 @@ Encoding:
 // arg
 #define BMATH_ENC_NONE 0
 #define BMATH_ENC_ASCII (1 << 0)
-#define BMATH_ENC_UTF8 (1 << 1)
-#define BMATH_ENC_UTF16 (1 << 2)
-#define BMATH_ENC_UTF32 (1 << 3)
-#define BMATH_ENC_BINARY (1 << 4)
-#define BMATH_ENC_DEFAULT (1 << 5)
+#define BMATH_ENC_BINARY (1 << 1)
+#define BMATH_ENC_HEX (1 << 2)
+#define BMATH_ENC_HEX16 (1 << 3)
+#define BMATH_ENC_HEX32 (1 << 4)
+#define BMATH_ENC_HEX64 (1 << 5)
+#define BMATH_ENC_INT (1 << 6)
+#define BMATH_ENC_UINT (1 << 7)
+#define BMATH_ENC_OCTAL (1 << 8)
+#define BMATH_ENC_UNICODE (1 << 9)
+#define BMATH_ENC_UTF8 (1 << 10)
+#define BMATH_ENC_UTF16 (1 << 11)
+#define BMATH_ENC_UTF32 (1 << 12)
+
+#define BMATH_ENC_DEFAULT (~0L)
+
+#define BMATH_ENC_ALL                                                          \
+ (BMATH_ENC_ASCII | BMATH_ENC_BINARY | BMATH_ENC_HEX |                  \
+  BMATH_ENC_HEX16 | BMATH_ENC_HEX32 | BMATH_ENC_HEX64 | BMATH_ENC_INT | \
+  BMATH_ENC_UINT | BMATH_ENC_OCTAL | BMATH_ENC_UNICODE |                \
+  BMATH_ENC_UTF8 | BMATH_ENC_UTF16 | BMATH_ENC_UTF32)
 ```
 
-Currently `BMATH_ENC_UTF16` and `BMATH_ENC_UTF32` are fully not supported.
-`BMATH_ENC_UTF8` only has normalization supported. The kernel doesn't
-have an implementation to convert to these encodings. So this will
-only display normalization in the UTF-8 case. Making that conversion
+Currently `BMATH_ENC_UTF16` and `BMATH_ENC_UTF32` are not supported.
+`BMATH_ENC_UNICODE` and `BMATH_ENC_UTF8` only has normalization supported.
+The kernel doesn't have an implementation to convert to these encodings.
+So this will only display normalization in the UTF-8 case. Making that conversion
 myself is a project on it's own.
 
 All of that said, given the bmath unicode encoding options, the UTF-8
@@ -110,7 +128,7 @@ make probe
 ```
 
 > Running `make probe` will likely not work if you're on a machine that
-requires signed modules. Best to stick to the test workflows.
+> requires signed modules. Best to stick to the test workflows.
 
 ### Dev Dependencies
 

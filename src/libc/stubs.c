@@ -64,6 +64,11 @@ void _stub____stack_chk_fail(void)
 	WARN(1, KBUILD_MODNAME ": stack check failure\n");
 }
 
+void *_stub__calloc(size_t nmemb, size_t size)
+{
+	return kzalloc(size * nmemb, GFP_ATOMIC);
+}
+
 int _stub__fprintf(FILE *stream, const char *fmt, ...)
 {
 	int ret;
@@ -108,6 +113,11 @@ void *_stub__malloc(size_t size)
 	return kzalloc(size, GFP_ATOMIC);
 }
 
+void *_stub__memcpy(void *dest, const void *src, size_t n)
+{
+	return __builtin_memcpy(dest, src, n);
+}
+
 void _stub__memset(void *s, int c, size_t n)
 {
 	memset(s, c, n);
@@ -144,7 +154,23 @@ int _stub__puts(const char *s)
 	return b;
 }
 
+int _stub__snprintf(char *str, size_t size, const char *format, ...)
+{
+	int ret;
+	va_list args;
+
+	va_start(args, format);
+	ret = vsnprintf(str, size, format, args);
+	va_end(args);
+	return ret;
+}
+
 size_t _stub__strlen(const char *s)
 {
-	return strlen(s);
+	return __builtin_strlen(s);
+}
+
+int _stub__strncmp(const char *s1, const char *s2, size_t n)
+{
+	return __builtin_strncmp(s1, s2, n);
 }

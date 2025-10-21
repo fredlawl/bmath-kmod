@@ -2,7 +2,7 @@
 rmmod bmath
 echo clear >/sys/kernel/debug/kmemleak
 insmod bmath.ko bmath.dyndbg=+p
-pytest -v tests
+pytest --tb=short -s -v tests
 rmmod bmath
 # TODO: Implement the following patch:
 # An API should be added to kernel to wait for a scan to complete to then

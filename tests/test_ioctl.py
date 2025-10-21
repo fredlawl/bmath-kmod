@@ -1,170 +1,275 @@
 import pytest
-import fcntl
-
-BMATH_SET_FORMAT = 0x4004B301
-BMATH_FMT_DEFAULTS = 0
-BMATH_FMT_UPPERCASE = 1 << 0
-
-BMATH_SET_ENC = 0x4004B302
-BMATH_ENC_NONE = 0
-BMATH_ENC_ASCII = 1 << 0
-BMATH_ENC_UTF8 = 1 << 1
-BMATH_ENC_UTF16 = 1 << 2
-BMATH_ENC_UTF32 = 1 << 3
-BMATH_ENC_BINARY = 1 << 4
-BMATH_ENC_DEFAULT = 1 << 5
+from util import (
+    Bits,
+    BmathIoctlEcoding,
+    BmathIoctlFormat,
+    BmathIoctlOption,
+    Encoding,
+    Format,
+    OutputFormat,
+    ascii_str,
+    binary_str,
+    hex_str,
+    int_str,
+    ioctl,
+    oct_str,
+    print_all_str,
+    unicode_str,
+)
 
 
 @pytest.mark.parametrize(
-    "input, expected, req, arg",
+    "input, expected, enc, fmt",
     [
         pytest.param(
             "0xAB",
-            """   u64: 171
-    i8: -85
-  char: Exceeded
-   Hex: 0xAB
- Hex16: 0x00AB
- Hex32: 0x000000AB
- Hex64: 0x00000000000000AB
-""",
-            BMATH_SET_FORMAT,
-            BMATH_FMT_UPPERCASE,
-            id="fmt uppercase",
-        ),
-        pytest.param(
-            "0xAB",
-            """   u64: 171
-    i8: -85
-  char: Exceeded
-   Hex: 0xab
- Hex16: 0x00ab
- Hex32: 0x000000ab
- Hex64: 0x00000000000000ab
-""",
-            BMATH_SET_FORMAT,
-            BMATH_FMT_DEFAULTS,
+            int_str(0xAB, True, Format.NONE),
+            BmathIoctlEcoding.DEFAULT,
+            BmathIoctlFormat.DEFAULT,
             id="fmt default",
         ),
         pytest.param(
             "0x21",
-            "",
-            BMATH_SET_ENC,
-            BMATH_ENC_NONE,
+            print_all_str(0x21, [], Format.NONE, OutputFormat.NONE),
+            BmathIoctlEcoding.NONE,
+            BmathIoctlFormat.NONE,
             id="enc none",
         ),
         pytest.param(
             "0x21",
-            """   u64: 33
-    i8: 33
-  char: !
-   Hex: 0x21
- Hex16: 0x0021
- Hex32: 0x00000021
- Hex64: 0x0000000000000021
-""",
-            BMATH_SET_ENC,
-            BMATH_ENC_DEFAULT,
-            id="enc default",
+            print_all_str(0x21, [], Format.NONE, OutputFormat.NONE),
+            BmathIoctlEcoding.NONE,
+            BmathIoctlFormat.HUMAN,
+            id="enc none; fmt human",
         ),
         pytest.param(
             "0x21",
-            """   u64: 33
-    i8: 33
-  char: !
-   Hex: 0x21
- Hex16: 0x0021
- Hex32: 0x00000021
- Hex64: 0x0000000000000021
-""",
-            BMATH_SET_ENC,
-            BMATH_ENC_ASCII,
+            ascii_str(0x21, Format.NONE),
+            BmathIoctlEcoding.ASCII,
+            BmathIoctlFormat.NONE,
             id="enc ascii",
         ),
         pytest.param(
             "0x21",
-            """   u64: 33
-    i8: 33
- UTF-8: ! (0x21)
-   Hex: 0x21
- Hex16: 0x0021
- Hex32: 0x00000021
- Hex64: 0x0000000000000021
-""",
-            BMATH_SET_ENC,
-            BMATH_ENC_UTF8,
-            id="enc utf-8",
-        ),
-        pytest.param(
-            "0x7d71",
-            """   u64: 32113
-   i16: 32113
- UTF-8: q} (0x717d)
-   Hex: 0x7d71
- Hex16: 0x7d71
- Hex32: 0x00007d71
- Hex64: 0x0000000000007d71
-""",
-            BMATH_SET_ENC,
-            BMATH_ENC_UTF8,
-            id="enc utf-8 (chinese 統)",
-        ),
-        pytest.param(
-            "0x1f0a0",
-            """   u64: 127136
-   i32: 127136
- UTF-8: <invalid> <invalid>
-   Hex: 0x1f0a0
- Hex16: Exceeded
- Hex32: 0x0001f0a0
- Hex64: 0x000000000001f0a0
-""",
-            BMATH_SET_ENC,
-            BMATH_ENC_UTF8,
-            id="enc utf-8 (card 🂠 )",
+            ascii_str(0x21, Format.HUMAN),
+            BmathIoctlEcoding.ASCII,
+            BmathIoctlFormat.HUMAN,
+            id="enc ascii; fmt human",
         ),
         pytest.param(
             "0x21",
-            """   u64: 33
-    i8: 33
-UTF-16: ! <invalid>
-   Hex: 0x21
- Hex16: 0x0021
- Hex32: 0x00000021
- Hex64: 0x0000000000000021
-""",
-            BMATH_SET_ENC,
-            BMATH_ENC_UTF16,
-            id="enc utf-16",
-        ),
-        pytest.param(
-            "0x21",
-            """   u64: 33
-    i8: 33
-UTF-32: ! <invalid>
-   Hex: 0x21
- Hex16: 0x0021
- Hex32: 0x00000021
- Hex64: 0x0000000000000021
-""",
-            BMATH_SET_ENC,
-            BMATH_ENC_UTF32,
-            id="enc utf-32",
-        ),
-        pytest.param(
-            "0x21",
-            """00000000 00000000 00000000 00000000
-00000000 00000000 00000000 00100001\n\x00""",
-            BMATH_SET_ENC,
-            BMATH_ENC_BINARY,
+            binary_str(0x21),
+            BmathIoctlEcoding.BINARY,
+            BmathIoctlFormat.NONE,
             id="enc binary",
+        ),
+        pytest.param(
+            "0x21",
+            binary_str(0x21),
+            BmathIoctlEcoding.BINARY,
+            BmathIoctlFormat.HUMAN,
+            id="enc binary; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            hex_str(0x21, Bits.MINIMAL, Format.NONE),
+            BmathIoctlEcoding.HEX,
+            BmathIoctlFormat.NONE,
+            id="enc hex",
+        ),
+        pytest.param(
+            "0x21",
+            hex_str(0x21, Bits.MINIMAL, Format.HUMAN),
+            BmathIoctlEcoding.HEX,
+            BmathIoctlFormat.HUMAN,
+            id="enc hex; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            hex_str(0x21, Bits.BITS_16, Format.NONE),
+            BmathIoctlEcoding.HEX16,
+            BmathIoctlFormat.NONE,
+            id="enc hex16",
+        ),
+        pytest.param(
+            "0x21",
+            hex_str(0x21, Bits.BITS_16, Format.HUMAN),
+            BmathIoctlEcoding.HEX16,
+            BmathIoctlFormat.HUMAN,
+            id="enc hex16; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            hex_str(0x21, Bits.BITS_32, Format.NONE),
+            BmathIoctlEcoding.HEX32,
+            BmathIoctlFormat.NONE,
+            id="enc hex32",
+        ),
+        pytest.param(
+            "0x21",
+            hex_str(0x21, Bits.BITS_32, Format.HUMAN),
+            BmathIoctlEcoding.HEX32,
+            BmathIoctlFormat.HUMAN,
+            id="enc hex32; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            hex_str(0x21, Bits.BITS_64, Format.NONE),
+            BmathIoctlEcoding.HEX64,
+            BmathIoctlFormat.NONE,
+            id="enc hex64",
+        ),
+        pytest.param(
+            "0x21",
+            hex_str(0x21, Bits.BITS_64, Format.HUMAN),
+            BmathIoctlEcoding.HEX64,
+            BmathIoctlFormat.HUMAN,
+            id="enc hex64; fmt human",
+        ),
+        pytest.param(
+            "0xAB",
+            print_all_str(
+                0xAB,
+                [
+                    Encoding.HEX,
+                    Encoding.HEX16,
+                    Encoding.HEX32,
+                    Encoding.HEX64,
+                ],
+                Format.UPPERCASE,
+                OutputFormat.NONE,
+            ),
+            BmathIoctlEcoding.HEX
+            | BmathIoctlEcoding.HEX16
+            | BmathIoctlEcoding.HEX32
+            | BmathIoctlEcoding.HEX64,
+            BmathIoctlFormat.UPPERCASE,
+            id="fmt uppercase",
+        ),
+        pytest.param(
+            "0xAB",
+            print_all_str(
+                0xAB,
+                [
+                    Encoding.HEX,
+                    Encoding.HEX16,
+                    Encoding.HEX32,
+                    Encoding.HEX64,
+                ],
+                Format.UPPERCASE | Format.HUMAN,
+                OutputFormat.NONE,
+            ),
+            BmathIoctlEcoding.HEX
+            | BmathIoctlEcoding.HEX16
+            | BmathIoctlEcoding.HEX32
+            | BmathIoctlEcoding.HEX64,
+            BmathIoctlFormat.UPPERCASE | BmathIoctlFormat.HUMAN,
+            id="fmt uppercase; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            int_str(0x21, False, Format.NONE),
+            BmathIoctlEcoding.INT,
+            BmathIoctlFormat.NONE,
+            id="enc int",
+        ),
+        pytest.param(
+            "0x21",
+            int_str(0x21, False, Format.HUMAN),
+            BmathIoctlEcoding.INT,
+            BmathIoctlFormat.HUMAN,
+            id="enc int; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            int_str(0x21, True, Format.NONE),
+            BmathIoctlEcoding.UINT,
+            BmathIoctlFormat.NONE,
+            id="enc uint",
+        ),
+        pytest.param(
+            "0x21",
+            int_str(0x21, True, Format.HUMAN),
+            BmathIoctlEcoding.UINT,
+            BmathIoctlFormat.HUMAN,
+            id="enc uint; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            oct_str(0x21, Format.NONE),
+            BmathIoctlEcoding.OCTAL,
+            BmathIoctlFormat.NONE,
+            id="enc octal",
+        ),
+        pytest.param(
+            "0x21",
+            oct_str(0x21, Format.HUMAN),
+            BmathIoctlEcoding.OCTAL,
+            BmathIoctlFormat.HUMAN,
+            id="enc octal; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            unicode_str(0x21, Format.NONE),
+            BmathIoctlEcoding.UNICODE,
+            BmathIoctlFormat.NONE,
+            id="enc unicode",
+        ),
+        pytest.param(
+            "0x21",
+            unicode_str(0x21, Format.HUMAN),
+            BmathIoctlEcoding.UNICODE,
+            BmathIoctlFormat.HUMAN,
+            id="enc unicode; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            "0x21",
+            BmathIoctlEcoding.UTF8,
+            BmathIoctlFormat.NONE,
+            id="enc utf8",
+        ),
+        pytest.param(
+            "0x21",
+            "UTF-8BE: 0x21",
+            BmathIoctlEcoding.UTF8,
+            BmathIoctlFormat.HUMAN,
+            id="enc utf8; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            "<invalid>",
+            BmathIoctlEcoding.UTF16,
+            BmathIoctlFormat.NONE,
+            id="enc utf16",
+        ),
+        pytest.param(
+            "0x21",
+            "UTF-16BE: <invalid>",
+            BmathIoctlEcoding.UTF16,
+            BmathIoctlFormat.HUMAN,
+            id="enc utf16; fmt human",
+        ),
+        pytest.param(
+            "0x21",
+            "<invalid>",
+            BmathIoctlEcoding.UTF32,
+            BmathIoctlFormat.NONE,
+            id="enc utf32",
+        ),
+        pytest.param(
+            "0x21",
+            "UTF-32BE: <invalid>",
+            BmathIoctlEcoding.UTF32,
+            BmathIoctlFormat.HUMAN,
+            id="enc utf32; fmt human",
         ),
     ],
 )
-def test_ioctl(input, expected, req, arg):
-    with open("/dev/bmath", "r+", encoding="utf-8") as f:
-        # with open("/dev/bmath", "r+") as f:
-        fcntl.ioctl(f.fileno(), req, arg)
+def test_ioctl(input, expected, enc, fmt):
+    with open("/dev/bmath", "r+") as f:
+        ioctl(f.fileno(), BmathIoctlOption.SET_ENC, enc)
+        ioctl(f.fileno(), BmathIoctlOption.SET_FORMAT, fmt)
         f.write(input)
         actual = f.read()
         assert expected == actual
@@ -172,9 +277,9 @@ def test_ioctl(input, expected, req, arg):
 
 def test_ioctl_overtakes():
     with open("/dev/bmath", "r+") as f:
-        fcntl.ioctl(f.fileno(), BMATH_SET_ENC, BMATH_ENC_BINARY)
+        ioctl(f.fileno(), BmathIoctlOption.SET_ENC, BmathIoctlEcoding.BINARY)
         f.write("0x21")
-        fcntl.ioctl(f.fileno(), BMATH_SET_ENC, BMATH_ENC_NONE)
+        ioctl(f.fileno(), BmathIoctlOption.SET_ENC, BmathIoctlEcoding.NONE)
         actual = f.read()
         assert "" == actual
 
@@ -183,6 +288,6 @@ def test_ioctl_after_read_has_no_effect():
     with open("/dev/bmath", "r+") as f:
         f.write("0x21")
         f.read()
-        fcntl.ioctl(f.fileno(), BMATH_SET_ENC, BMATH_ENC_NONE)
+        ioctl(f.fileno(), BmathIoctlOption.SET_ENC, BmathIoctlEcoding.NONE)
         actual = f.read()
         assert "" != actual

@@ -12,9 +12,10 @@ const struct relocate_sym *rlsyms[] = {
 	&R_STUB(__assert_fail), &R_STUB(__cxa_atexit),
 	&R_STUB(__errno_location), &R_STUB(__fprintf_chk),
 	&R_STUB(__stack_chk_fail), &R_STUB(stdout), &R_STUB(stderr),
-	&R_STUB(fprintf), &R_STUB(fputc), &R_STUB(free), &R_STUB(fwrite),
-	&R_STUB(malloc), &R_STUB(memset), &R_STUB(printf), &R_STUB(putc),
-	&R_STUB(putchar), &R_STUB(puts), &R_STUB(strlen),
+	&R_STUB(calloc), &R_STUB(fprintf), &R_STUB(fputc), &R_STUB(free),
+	&R_STUB(fwrite), &R_STUB(malloc), &R_STUB(memcpy), &R_STUB(memset),
+	&R_STUB(printf), &R_STUB(putc), &R_STUB(putchar), &R_STUB(puts),
+	&R_STUB(snprintf), &R_STUB(strlen), &R_STUB(strncmp),
 
 	// iconv
 	&R_STUB(iconv), &R_STUB(iconv_open), &R_STUB(iconv_close),

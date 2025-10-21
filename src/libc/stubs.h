@@ -33,15 +33,20 @@ void _stub____cxa_finalize(void *d);
 int _stub____fprintf_chk(FILE *stream, int flag, const char *format, ...);
 void _stub____stack_chk_fail(void);
 
+void *_stub__calloc(size_t nmemb, size_t size);
 int _stub__fprintf(FILE *stream, const char *fmt, ...);
 int _stub__fputc(int c, FILE *stream);
 void _stub__free(void *ptr);
 size_t _stub__fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);
 void *_stub__malloc(size_t size);
+void *_stub__memcpy(void *dest, const void *src, size_t n);
 void _stub__memset(void *s, int c, size_t n);
 int _stub__printf(const char *format, ...);
 int _stub__putc(int c, FILE *stream);
 int _stub__putchar(int c);
 int _stub__puts(const char *s);
 size_t _stub__strlen(const char *s);
+int _stub__snprintf(char *str, size_t size, const char *format, ...);
+size_t _stub__strlen(const char *s);
+int _stub__strncmp(const char *s1, const char *s2, size_t n);
 #endif // _BMATH_LIBC_STUBS_H_

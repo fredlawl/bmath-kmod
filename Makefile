@@ -34,10 +34,10 @@ firmware: libbmath.so
 
 libbmath.so:
 	# Common search paths. Prefer undistributed builds
-	-cp /usr/lib/x86_64-linux-gnu/libbmath.so.1 $@
-	-cp /usr/lib/lib64/libbmath.so.1 $@
-	-cp /usr/local/lib/x86_64-linux-gnu/libbmath.so.1 $@
-	-cp /usr/local/lib64/libbmath.so.1 $@
+	-cp /usr/lib/x86_64-linux-gnu/libbmath.so.2 $@
+	-cp /usr/lib/lib64/libbmath.so.2 $@
+	-cp /usr/local/lib/x86_64-linux-gnu/libbmath.so.2 $@
+	-cp /usr/local/lib64/libbmath.so.2 $@
 
 .PHONY: run
 run: all

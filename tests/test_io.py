@@ -1,7 +1,7 @@
 from io import SEEK_CUR, SEEK_END, SEEK_SET, UnsupportedOperation
 
 import pytest
-from util import _fill_template
+from util import default_str
 
 
 def test_open_close():
@@ -43,18 +43,13 @@ def test_rw():
         f.write("0x1")
         f.write("0x2")
         data = f.read()
-        assert "[PARSE ERROR]" in data, "second write concats to first"
+        assert "Parse error" in data, "second write concats to first"
 
     with open("/dev/bmath", "r+") as f:
         f.write("0x1\n")  # newline terminator is bmath behavior, hence test passes
         f.write("0x2")
         data = f.read()
-        assert _fill_template("1") in data, "second write doesn't reset first"
-
-    with open("/dev/bmath", "r+") as f:
-        f.write("mask(1)")  # newline terminator is bmath behavior, hence test passes
-        data = f.read()
-        assert "Hex: 0xff" in data, "second write doesn't reset first"
+        assert default_str(0x1) in data, "second write doesn't reset first"
 
 
 def test_read():
@@ -113,6 +108,6 @@ def test_maximum_input():
         ), "bmath calculation limit not met"
 
     with pytest.raises(OSError):
+        input = "1" * 513  # module buffer limit
         with open("/dev/bmath", "r+") as f:
-            input = "1" * 513  # module buffer limit
             f.write(input)
