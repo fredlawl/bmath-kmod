@@ -47,7 +47,7 @@ run: all
 		--run $(KIMG) \
 		--user root \
 		--rwdir=$(PWD) \
-		--append "firmare.path=$(PWD) module.sig_enforce=0 kaslr"
+		--append "firmware_class.path=$(PWD) module.sig_enforce=0 kaslr"
 
 .PHONY: debug
 debug: all
@@ -58,7 +58,7 @@ debug: all
 		--run $(KIMG) \
 		--user root \
 		--rwdir=$(PWD) \
-		--append "firmare.path=$(PWD) kasan_multi_shot module.sig_enforce=0 nokaslr debug loglevel=8 kmemleak=on"
+		--append "firmware_class.path=$(PWD) kasan_multi_shot module.sig_enforce=0 nokaslr debug loglevel=8 kmemleak=on"
 
 .PHONY: test
 test: all
@@ -68,7 +68,7 @@ test: all
 		--run $(KIMG) \
 		--user root \
 		--rwdir=$(PWD) \
-		--append "firmare.path=$(PWD) oops=panic module.sig_enforce=0 kaslr kmemleak=on"  \
+		--append "firmware_class.path=$(PWD) oops=panic module.sig_enforce=0 kaslr kmemleak=on"  \
 		-- /bin/sh test-runner.sh
 
 .PHONY: probe

@@ -107,10 +107,11 @@ class BmathFailedEncoding(Exception):
     """Raised when a specific custom condition occurs."""
 
     def __init__(self, message, code):
-        super().__init__(f"{message}: {os.strerror(code)} ({errno.errorcode[code]})")
+        super().__init__(f"{message}: {
+            os.strerror(code)} ({errno.errorcode[code]})")
 
 
-libbmath = ctypes.CDLL("libbmath.so")
+libbmath = ctypes.CDLL("./libbmath.so")
 libc = ctypes.CDLL(None)
 
 # ssize_t print_all(FILE *stream, uint64_t num, enum encoding_t encode_order[],
@@ -227,7 +228,8 @@ def hex_str(num, bits, fmt):
 
 # ssize_t int_str(char *dest, size_t dest_len, uint64_t number, bool is_unsigned,
 # enum format_t fmt);
-libbmath.int_str.argtypes = (POINTER(c_char), c_size_t, c_uint64, c_bool, c_int)
+libbmath.int_str.argtypes = (
+    POINTER(c_char), c_size_t, c_uint64, c_bool, c_int)
 libbmath.int_str.restype = c_ssize_t
 
 
