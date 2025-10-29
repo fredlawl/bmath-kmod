@@ -18,7 +18,7 @@ static DEFINE_MUTEX(libcmux);
 
 int libc_write(FILE *dest, const char *src, size_t len)
 {
-	if (dest->len + len - 1 > LIBC_IO_BUF_SIZE) {
+	if (dest->len + len > LIBC_IO_BUF_SIZE) {
 		return EOF;
 	}
 
@@ -29,7 +29,7 @@ int libc_write(FILE *dest, const char *src, size_t len)
 
 int libc_writechar(FILE *dest, const char c)
 {
-	if (LIBC_IO_BUF_SIZE - dest->len + 1 - 1 > LIBC_IO_BUF_SIZE) {
+	if (dest->len + 1 > LIBC_IO_BUF_SIZE) {
 		return EOF;
 	}
 

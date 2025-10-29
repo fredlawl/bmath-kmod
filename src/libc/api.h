@@ -7,6 +7,9 @@
 
 #define LIBC_IO_BUF_SIZE 1024
 
+// glibc-2.36/libio/stdio.h
+#define EOF (-1)
+
 typedef struct libc_file {
 	char buf[LIBC_IO_BUF_SIZE];
 	size_t len;
