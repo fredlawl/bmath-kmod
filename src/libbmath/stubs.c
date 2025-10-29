@@ -4,8 +4,10 @@
 #include "../libc/stubs.h"
 #include "../libiconv/stubs.h"
 
-#define R_STUB(n) \
-	((struct relocate_sym){ .name = #n, .addr = (uintptr_t) & _stub__##n })
+#define R_STUB(n)                                       \
+	((struct relocate_sym){ .name = #n,             \
+				.nlen = sizeof(#n) - 1, \
+				.addr = (uintptr_t) & _stub__##n })
 
 const struct relocate_sym *rlsyms[] = {
 	// libc

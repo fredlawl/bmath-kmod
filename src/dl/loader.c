@@ -247,8 +247,7 @@ static void relocate_stubs(const struct exe *exe, u64 type,
 
 	while ((rsym = *rsyms++) != NULL) {
 		// Only match symbols we want to relocate
-		if (strlen(rsym->name) != sym_namelen ||
-		    strcmp(rsym->name, sym_name)) {
+		if (rsym->nlen != sym_namelen || strcmp(rsym->name, sym_name)) {
 			continue;
 		}
 

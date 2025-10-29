@@ -13,6 +13,7 @@
 
 struct relocate_sym {
 	const unsigned char *name;
+	size_t nlen;
 	uintptr_t addr;
 };
 
