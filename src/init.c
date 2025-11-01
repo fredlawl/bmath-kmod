@@ -175,9 +175,7 @@ static int api_test(void)
 	int err = 0;
 	void *tls;
 	struct parser_context *pctx;
-	struct parse_fmt fmt = { .uppercase = true,
-				 .encoding = BMATH_ENC_ASCII,
-				 .binary = true };
+	struct parse_fmt fmt = bmath_parse_fmt(NULL);
 	struct parser_settings *psettings =
 		&(struct parser_settings){ .max_parse_len = BMATH_MAX_PARSE_LEN,
 					   .err_stream = stream };

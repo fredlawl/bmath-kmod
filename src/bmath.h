@@ -75,7 +75,16 @@ static __always_inline struct parse_fmt
 bmath_parse_fmt(const struct bmath_data *data)
 {
 	struct parse_fmt fmt = { 0 };
-	u64 enc = data->encoding;
+	u64 enc;
+	u64 format;
+
+	if (!data) {
+		format = BMATH_FMT_DEFAULT;
+		enc = BMATH_ENC_DEFAULT;
+	} else {
+		format = data->format;
+		enc = data->encoding;
+	}
 
 	if (enc == BMATH_ENC_DEFAULT) {
 		enc = BMATH_ENC_UINT;
@@ -133,13 +142,12 @@ bmath_parse_fmt(const struct bmath_data *data)
 		fmt.encodings[fmt.encodings_len++] = ENC_UTF32;
 	}
 
-	if (data->format == BMATH_FMT_DEFAULT) {
+	if (format == BMATH_FMT_DEFAULT) {
 		fmt.out_format = OUT_FMT_NONE;
 		fmt.format = FMT_NONE;
 	} else {
-		u64 of = data->format &
-			 (~BMATH_FMT_HUMAN | ~BMATH_FMT_UPPERCASE);
-		u64 f = data->format & ~BMATH_FMT_JUSTIFY;
+		u64 of = format & (~BMATH_FMT_HUMAN | ~BMATH_FMT_UPPERCASE);
+		u64 f = format & ~BMATH_FMT_JUSTIFY;
 
 		if (of & BMATH_FMT_JUSTIFY)
 			fmt.out_format |= OUT_FMT_JUSTIFY;
