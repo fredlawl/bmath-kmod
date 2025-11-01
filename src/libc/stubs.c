@@ -58,6 +58,20 @@ int _stub____fprintf_chk(FILE *stream, int flag, const char *format, ...)
 	return ret;
 }
 
+// https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---snprintf-chk-1.html
+// https://elixir.bootlin.com/glibc/glibc-2.41.9000/source/sysdeps/ieee754/ldbl-opt/nldbl-snprintf_chk.c
+int _stub____snprintf_chk(char *str, size_t maxlen, int flag, size_t strlen,
+			  const char *format, ...)
+{
+	int ret;
+	va_list args;
+
+	va_start(args, format);
+	ret = vsnprintf(str, maxlen, format, args);
+	va_end(args);
+	return ret;
+}
+
 // https://refspecs.linuxbase.org/LSB_5.0.0/LSB-Core-generic/LSB-Core-generic/baselib---stack-chk-fail-1.html
 void _stub____stack_chk_fail(void)
 {

@@ -31,6 +31,8 @@ int _stub____cxa_atexit(void (*func)(void *), void *arg, void *dso_handle);
 int *_stub____errno_location(void);
 void _stub____cxa_finalize(void *d);
 int _stub____fprintf_chk(FILE *stream, int flag, const char *format, ...);
+int _stub____snprintf_chk(char *str, size_t maxlen, int flag, size_t strlen,
+			  const char *format, ...);
 void _stub____stack_chk_fail(void);
 
 void *_stub__calloc(size_t nmemb, size_t size);
